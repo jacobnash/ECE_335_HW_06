@@ -1,25 +1,25 @@
-EXECUTABLES = simulate
 
+EXECUTABLES = simulate
 CC = gcc
 LIBS = libfdr.a
-CFLAGS = -O2 
+CFLAGS = -O2
 
-LIBFDROBJS = dllist.o  jval.o
+LIBFDROBJS = dllist.o jval.o
 
-all: $(EXECUTABLES) simulate
+all: $(EXECUTABLES)
 
 .SUFFIXES: .c .o
-	.c.o:
-		$(CC) $(CFLAGS) -w -c $*.c
+.c.o:
+	$(CC) $(CFLAGS) -w -c $*.c
 
-
-simulate:  simulate.o libfdr.a
-		$(CC) $(CFLAGS) -o simulate  simulate.o $(LIBS) -lm
-
+simulate: simulate.o libfdr.a
+	$(CC) $(CFLAGS) -o simulate simulate.o $(LIBS) -lm
 
 libfdr.a: $(LIBFDROBJS)
-		ar ru libfdr.a $(LIBFDROBJS)
-			ranlib libfdr.a 
+	ar ru libfdr.a $(LIBFDROBJS)
+	ranlib libfdr.a 
 clean:
-		rm -f core *.o $(EXECUTABLES) *~ libfdr.a test*
+	rm -f core *.o $(EXECUTABLES) *~ libfdr.a
 
+test: simulate
+	./simulate 64 16 1 4 4
