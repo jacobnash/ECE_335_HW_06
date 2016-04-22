@@ -18,19 +18,27 @@
 #include "Dllist.h"
 
 typedef struct {
-unsigned int c_sz;// cache size
-unsigned int b_sz;// block size in bytes
-int w_ty;// write through type
-int i_j[2];// i and j val. this will be able to change.
-} Cache_Simulation;
+    int  t;
+    int  v;
+    int  c;
+} Cache_Block;
 
 typedef struct {
-    int valid;
-    int test; 
-} cache;
+unsigned int c_sz;// cache size
+unsigned int t_ms;// tah mask
+unsigned int b_sz;// block size in bytes
+unsigned int b_ms;// block mask
+unsigned int d_sz;// data size int is 4
+unsigned int s_ms;// Set mask
+int w_ty;// write through type
+int i_j[2];// i and j val. this will be able to change.
+Cache_Block *blks; 
+} Cache_Simulation;
+
 typedef struct { 
-    int *map;
-} map;
+    int hits;
+    int misses;
+} Stats;
 
 
 
