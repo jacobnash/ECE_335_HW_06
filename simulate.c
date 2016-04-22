@@ -8,7 +8,7 @@
 #define mmalloc(ty, sz) (ty *) malloc ((sz) * sizeof(ty))
 #define M_SZ 31
 
-int DEBUG = 1;
+int DEBUG = 0;
 
 void usage(char *s)
 {
@@ -45,7 +45,7 @@ int hit_miss(int address,Cache_Simulation *cs)
 
         if(cs->blks[j+section].v == 0)
         {
-            fprintf(stderr,"miss\n");
+            if(DEBUG) fprintf(stderr,"miss\n");
             cs->blks[j+section].v = 1;
             cs->blks[j+section].t = tag;
             cs->blks[j+section].c = 0;
@@ -53,14 +53,14 @@ int hit_miss(int address,Cache_Simulation *cs)
         }
         else if(cs->blks[j+section].t == tag)
         {
-            fprintf(stderr,"hit\n");
+            if(DEBUG) fprintf(stderr,"hit\n");
             return 1;
         }
     }
     for(int j = 0; j < cs->w_ty; j++)
     {
         if (max  == cs->blks[j+section].c){
-            fprintf(stderr,"miss\n");
+            if(DEBUG)  fprintf(stderr,"miss\n");
             cs->blks[j+section].v = 1;
             cs->blks[j+section].t = tag;
             cs->blks[j+section].c = 0;
@@ -112,18 +112,29 @@ int main(int argc, char **argv)
         cs->blks[i].t = 0; 
         cs->blks[i].c = 0; 
     }
-    fprintf(stderr, "number of blocks: %d\n", blk_cnt);
+    //set up stats.
+    Stats r,w;
+    r.m = 0;
+    r.h = 0;
+    w.m = 0;
+    w.h = 0;
+    if(DEBUG) fprintf(stderr, "number of blocks: %d\n", blk_cnt);
 
     for(int i = 0; i < cs->i_j[0]; i++){
         for(int j = 0; j <cs->i_j[1]; j++){
             //dst[j][i] = src[i][j];
             if(DEBUG) fprintf(stderr, "R: 0x%s\n", byte_to_binary((j + i*cs->i_j[1])*cs->d_sz));
-            hit_miss((j + i*cs->i_j[1])*cs->d_sz,cs);
+            if( hit_miss((j + i*cs->i_j[1])*cs->d_sz,cs)) ++r.h;
+            else ++r.m;
             if(DEBUG) fprintf(stderr, "W: 0x%s\n", byte_to_binary(((i + j*cs->i_j[0])*cs->d_sz) + (cs->i_j[0]*cs->i_j[1] * cs->d_sz)));
-            hit_miss(((i + j*cs->i_j[0])*cs->d_sz) + (cs->i_j[0]*cs->i_j[1] * cs->d_sz),cs);
+            if (hit_miss(((i + j*cs->i_j[0])*cs->d_sz) + (cs->i_j[0]*cs->i_j[1] * cs->d_sz),cs)) ++w.h;
+            else ++w.m;
         }
     }
-
+    float avg = (float)r.h/(float)(r.h+r.m);
+    fprintf(stdout, "Read stats:\n\t Hits:%d \n\t Misses:%d \n\t Hit percent: %f\n",r.h,r.m,avg);
+    avg = (float)w.h/(float)(w.h+w.m);
+    fprintf(stdout, "Write stats:\n\t Hits:%d \n\t Misses:%d \n\t Hit percent: %f\n",w.h,w.m,avg);
 
     return 0;
 }

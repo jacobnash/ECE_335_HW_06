@@ -36,8 +36,8 @@ Cache_Block *blks;
 } Cache_Simulation;
 
 typedef struct { 
-    int hits;
-    int misses;
+    int h;
+    int m;
 } Stats;
 
 

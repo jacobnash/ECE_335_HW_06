@@ -22,4 +22,4 @@ clean:
 	rm -f core *.o $(EXECUTABLES) *~ libfdr.a
 
 test: simulate
-	./simulate 64 16 4 4  4 4
+	./simulate 32 16 1 4  4 4
