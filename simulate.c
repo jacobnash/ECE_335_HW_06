@@ -119,21 +119,42 @@ int main(int argc, char **argv)
     w.m = 0;
     w.h = 0;
     if(DEBUG) fprintf(stderr, "number of blocks: %d\n", blk_cnt);
-
+    char* SRC = "";
+    char* DST = "";
     for(int i = 0; i < cs->i_j[0]; i++){
         for(int j = 0; j <cs->i_j[1]; j++){
             //dst[j][i] = src[i][j];
             if(DEBUG) fprintf(stderr, "R: 0x%s\n", byte_to_binary((j + i*cs->i_j[1])*cs->d_sz));
-            if( hit_miss((j + i*cs->i_j[1])*cs->d_sz,cs)) ++r.h;
-            else ++r.m;
+            if( hit_miss((j + i*cs->i_j[1])*cs->d_sz,cs)) 
+            {
+                asprintf(&SRC, "%s\tH",SRC);
+
+            }
+            else
+            {
+                ++r.m;
+                asprintf(&SRC, "%s\tM",SRC); 
+            }
             if(DEBUG) fprintf(stderr, "W: 0x%s\n", byte_to_binary(((i + j*cs->i_j[0])*cs->d_sz) + (cs->i_j[0]*cs->i_j[1] * cs->d_sz)));
-            if (hit_miss(((i + j*cs->i_j[0])*cs->d_sz) + (cs->i_j[0]*cs->i_j[1] * cs->d_sz),cs)) ++w.h;
-            else ++w.m;
+            if (hit_miss(((i + j*cs->i_j[0])*cs->d_sz) + (cs->i_j[0]*cs->i_j[1] * cs->d_sz),cs)){
+                ++w.h;
+                asprintf(&DST, "%s\tH",DST); 
+            }
+            else 
+            {
+                ++w.m;
+                asprintf(&DST,  "%s\tM",DST); 
+            }
         }
+
+                asprintf(&SRC, " %s\n",SRC); 
+                asprintf(&DST, " %s\n",DST); 
     }
     float avg = (float)r.h/(float)(r.h+r.m);
-    fprintf(stdout, "Read stats:\n\t Hits:%d \n\t Misses:%d \n\t Hit percent: %f\n",r.h,r.m,avg);
+    fprintf(stdout, "SRC: \n %s", SRC);
+    fprintf(stdout, "Read stats:\n\t Hits:%d \n\t Misses:%d \n\t Hit percent: %f\n\n",r.h,r.m,avg);
     avg = (float)w.h/(float)(w.h+w.m);
+    fprintf(stdout, "DST: \n %s", DST);
     fprintf(stdout, "Write stats:\n\t Hits:%d \n\t Misses:%d \n\t Hit percent: %f\n",w.h,w.m,avg);
 
     return 0;
