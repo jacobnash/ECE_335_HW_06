@@ -127,6 +127,7 @@ int main(int argc, char **argv)
             if(DEBUG) fprintf(stderr, "R: 0x%s\n", byte_to_binary((j + i*cs->i_j[1])*cs->d_sz));
             if( hit_miss((j + i*cs->i_j[1])*cs->d_sz,cs)) 
             {
+                ++r.h;
                 asprintf(&SRC, "%s\tH",SRC);
 
             }
