@@ -1,6 +1,6 @@
 
 EXECUTABLES = simulate
-CC = gcc
+CC = gcc -std=c99
 LIBS = libfdr.a
 CFLAGS = -O2
 
